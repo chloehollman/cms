@@ -67,7 +67,7 @@ export class DocumentsService {
   // }
 
   getDocuments() {
-    this.http.get<Document[]>('https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/documents.json')
+    this.http.get('https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/documents.json')
     .subscribe(
       // success method
       (documents: 
