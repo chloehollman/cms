@@ -11,6 +11,7 @@ import { ContactService } from '../contact.service';
 export class ContactListComponent implements OnInit {
   contacts: Contact[]= [];
   subscription: Subscription;
+  term: string;
 
 constructor(private contactService: ContactService) { }
 
@@ -32,8 +33,17 @@ constructor(private contactService: ContactService) { }
     this.subscription.unsubscribe();
   }
 
+
+search(value: string) {
+
+  this.term = value;
+  
+  }
+
    
 }
+
+
 
 // onSelected(contact: Contact) {
 //   this.selectedContactEvent.emit(contact);

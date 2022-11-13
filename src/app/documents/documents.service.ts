@@ -2,16 +2,17 @@ import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentsService {
-  documents: Document[];
+  documents: Document[]=[];
   documentListChangedEvent = new Subject<Document[]>();
   maxDocumentId: number;
 
-  constructor() { 
+  constructor(private http: HttpClient) { 
     this.documents = MOCKDOCUMENTS;
     this.maxDocumentId = this.getMaxId();
   }
@@ -61,9 +62,47 @@ export class DocumentsService {
     return null;
   }
 
-  getDocuments(): Document[] {
-    return this.documents.slice()
+  // getDocuments(): Document[] {
+  //   return this.documents.slice()
+  // }
+
+  getDocuments() {
+    this.http.get<Document[]>('https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/documents.json')
+    .subscribe(
+      // success method
+      (documents: 
+        Document[] ) => {
+        this.documents = documents;
+        
+        this.maxDocumentId = this.getMaxId();
+        
+        this.documents.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
+        
+        this.documentListChangedEvent.next(this.documents.slice());
+      });
+  
+      (error: any) => {
+        console.log(error);
+      }
   }
+
+  storeDocuments() {
+    let documents = JSON.stringify(this.documents);
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    this.http
+    .put("https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/document.json", 
+    documents, {
+      
+      headers: headers,
+    })
+    
+    .subscribe(() => {
+      this.documentListChangedEvent.next
+      (this.documents.slice());
+    });
+  }
+
 
   getMaxId(): number {
     let maxId = 0;

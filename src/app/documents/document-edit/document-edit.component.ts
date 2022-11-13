@@ -61,8 +61,7 @@ onSubmit(form: NgForm){
 
     }
 
-    console.log(newDocument);
-    this.router.navigate(['/documents'], {relativeTo: this.route});
+   
 }
 
 
