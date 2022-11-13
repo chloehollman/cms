@@ -1,17 +1,19 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 
+
 @Injectable({
    providedIn: 'root'
 })
 export class ContactService {
-   contacts: Contact[];
+   contacts: Contact[]=[];
    contactListChangedEvent = new Subject<Contact[]>();
    maxContactId: number;
 
-   constructor() {
+   constructor(private http: HttpClient) {
       this.contacts = MOCKCONTACTS;
       this.maxContactId = this.getMaxId();
    }
@@ -55,9 +57,6 @@ export class ContactService {
       return this.contacts.find((contact) => contact.id === id);
    }
 
-   getContacts(): Contact[] {
-      return this.contacts.slice()
-   }
 
    getMaxId(): number {
       let maxId = 0;
@@ -92,6 +91,44 @@ export class ContactService {
       this.contactListChangedEvent.next(contactsListClone);
   
   
+    }
+
+
+    getContacts() {
+      this.http.get("https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/contacts.json")
+      .subscribe(
+        // success method
+        (contacts: 
+          Contact[] ) => {
+          this.contacts = contacts;
+          
+          this.maxContactId = this.getMaxId();
+          
+          this.contacts.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
+          
+          this.contactListChangedEvent.next(this.contacts.slice());
+        });
+    
+        (error: any) => {
+          console.log(error);
+        }
+    }
+  
+    storeContacts() {
+      let contacts = JSON.stringify(this.contacts);
+      const headers = new HttpHeaders({'Content-Type': 'application/json'});
+  
+      this.http
+      .put("https://wdd430-cms-b65fe-default-rtdb.firebaseio.com/contacts.json", 
+      contacts, {
+        
+        headers: headers,
+      })
+      
+      .subscribe(() => {
+        this.contactListChangedEvent.next
+        (this.contacts.slice());
+      });
     }
 
 }
