@@ -62,7 +62,7 @@ export class ContactEditComponent implements OnInit {
   
       }
   
-      console.log(newContact);
+      
       this.router.navigate(['/contacts'], {relativeTo: this.route});
   } 
 
