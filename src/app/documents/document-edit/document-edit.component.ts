@@ -46,6 +46,7 @@ onSubmit(form: NgForm){
   const value = form.value;
   const newDocument = new Document(
     "",
+    "",
     value.id,
     value.name, 
     value.description, 
